@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from pymongo.mongo_client import MongoClient
 from configs import db_login, db_password
+from schemas import Task
+from bson.objectid import ObjectId
 
 uri = f"mongodb+srv://{db_login}:{db_password}@cluster0.hzsg4od.mongodb.net/?retryWrites=true&w=majority"
 db = MongoClient(uri).tasks
@@ -28,18 +30,26 @@ async def show_tasks(page_num:int=0, page_size:int=25):
     end_index = start_index + page_size - 1
     results = list(db.tasks.find()[start_index:end_index])
     all_id_prop_to_str(results)
-    print(results)
     return {
         "results" : results
     }
 
 @app.put("/tasks")
-async def edit_tasks():
-    pass
+async def edit_tasks(task:Task):
+    db.tasks.update_one(
+        {"_id" : ObjectId(task.id)},
+        {"$set": {
+            "title" : task.title,
+            "description" : task.description,
+            "status" : task.status,
+        }}
+    )
+
 
 @app.delete("/tasks")
-async def delete_task():
-    pass
+async def delete_task(task_id):
+    db.tasks.delete_one({"_id" : ObjectId(task_id)})
+
 
 def all_id_prop_to_str(id_objects):
     for obj in id_objects:
