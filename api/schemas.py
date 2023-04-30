@@ -11,4 +11,16 @@ class Task(BaseModel):
     description: str = Field(max_length=4000)
     status: StatusEnum
 
+class TokenTypeEnum(str, Enum):
+    google = "google"
+    custom = "custom"
 
+class Token(BaseModel):
+    token_value: str
+    token_type: TokenTypeEnum
+    username: str
+
+class User(BaseModel):
+    username: str
+    email: str
+    disabled: bool
