@@ -23,10 +23,10 @@ auth_router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-@auth_router.post("/create_session/{name}")
+@auth_router.post("/create_session")
 async def create_session(response: Response):
-    session = uuid4()
-    data = SessionData(username="")
-    await backend.create(session, data)
-    cookie.attach_to_response(response, session)
+    session_id = uuid4()
+    data = SessionData(email="")
+    await backend.create(session_id, data)
+    cookie.attach_to_response(response, session_id)
     return f"created session!"
