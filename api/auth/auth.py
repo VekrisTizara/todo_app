@@ -1,8 +1,7 @@
-from pydantic import BaseModel
 from fastapi import APIRouter
 from fastapi import Response
 from uuid import uuid4
-from .session_verifier import backend
+from .session_verifier import backend, SessionData
 from fastapi_sessions.frontends.implementations import SessionCookie, CookieParameters
 from api.configs import session_secret_key
 
@@ -14,9 +13,6 @@ cookie = SessionCookie(
     secret_key=session_secret_key,
     cookie_params=cookie_params,
 )
-
-class SessionData(BaseModel):
-    username: str
 
 auth_router = APIRouter(
     prefix="/auth",

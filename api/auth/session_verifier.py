@@ -1,9 +1,12 @@
+from pydantic import BaseModel
 from fastapi_sessions.session_verifier import SessionVerifier
 from fastapi_sessions.backends.implementations import InMemoryBackend
 from fastapi import HTTPException
 from uuid import UUID
-from .auth import SessionData
 
+
+class SessionData(BaseModel):
+    email: str
 
 class BasicVerifier(SessionVerifier[UUID, SessionData]):
     def __init__(

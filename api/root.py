@@ -1,11 +1,14 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from .schemas import Task
 from bson.objectid import ObjectId
-from .auth.google_oauth import router
+from .auth.google_oauth import gauth_router
 from .db import db
+from .auth.auth import cookie, auth_router
+from .auth.session_verifier import verifier, SessionData
 
 app = FastAPI()
-app.include_router(router)
+app.include_router(gauth_router)
+app.include_router(auth_router)
 
 @app.get("/")
 async def root():
@@ -48,6 +51,9 @@ async def edit_tasks(task:Task):
 async def delete_task(task_id):
     db.tasks.delete_one({"_id" : ObjectId(task_id)})
 
+@app.get("/whoami", dependencies=[Depends(cookie)])
+async def whoami(session_data: SessionData = Depends(verifier)):
+    return session_data
 
 def all_id_prop_to_str(id_objects):
     for obj in id_objects:
